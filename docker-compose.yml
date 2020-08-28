@@ -3,6 +3,7 @@ services:
   mern:
     container_name: mern
     restart: always
+    image: jtweaver/mern-docker
     build: .
     ports:
       - "5000:5000"
@@ -13,17 +14,36 @@ services:
     environment:
       - NODE_ENV=production
       - WAIT_HOSTS=mongo:27017
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
-#    command: ["npm", "run", "prod"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
+    command: ["npm", "run", "prod"]
+  nosql:
+    container_name: nosql
+    image: mongoclient/mongoclient
+    # volumes:
+    #   - ./data:/data/db
+    ports:
+      - "5300:3000"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    environment:
+      - MONGO_USERNAME=mernUser
+      - MONGO_PASSWORD=password
+      - MONGO_ADDRESSES=mongo
+      - MONGO_OPT_PARAMS=authSource=admin
+      - MONGO_DATABASE=mern
+      # - MONGO_URL=mongodb://mernUser:password@mongo-ip:27017/mern?authSource=admin
   mongo:
     container_name: mongo
     image: mongo
-#    volumes:
-#    - ./data:/data/db
+    volumes:
+      - ./data:/data/db
     ports:
       - "27017:27017"
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mernUser
       - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_INITDB_DATABASE=mern
+    
