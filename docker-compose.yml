@@ -4,7 +4,9 @@ services:
     container_name: mern
     restart: always
     image: jtweaver/mern-docker
-    build: .
+    build:
+      context: .
+      dockerfile: mern.dockerfile
     ports:
       - "5000:5000"
     links:
